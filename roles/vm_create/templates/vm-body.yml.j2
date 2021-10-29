@@ -1,0 +1,27 @@
+api_version: '3.0'
+metadata:
+  kind: vm
+spec:
+  cluster_reference:
+    kind: cluster
+    uuid: {{ cluster_uuid }}
+  name: {{ inventory_hostname }}
+  description: Built from {{ vm_template }}
+  resources:
+    disk_list:
+    - data_source_reference:
+        kind: image
+        uuid: {{ image_uuid }}
+    memory_size_mib: {{ vm_ram*1024 }}
+    nic_list:
+    - ip_endpoint_list:
+      - ip: {{ vm_ip }}
+      subnet_reference:
+        kind: subnet
+        uuid: {{ subnet_uuid }}
+    num_sockets: 1
+    num_vcpus_per_socket: {{ vm_cpu }}
+    power_state: 'ON'
+    guest_customization:
+      cloud_init:
+        user_data: {{ lookup('template','cloud-init.yml.j2') | b64encode }}
