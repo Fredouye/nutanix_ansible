@@ -1,0 +1,21 @@
+- name: Get images list
+  uri:
+    url: "{{ api_url_v3 }}/images/list"
+    body:
+      length: 100
+      offset: 0
+      filter: ""
+    method: POST
+    validate_certs: false
+    body_format: json
+    status_code: 200
+    headers: 
+      Cookie: "{{ session_cookie }}"
+  delegate_to: localhost
+  register: images_list
+
+- name: Get subnet UUID from its name
+  set_fact:
+    image_uuid: '{{ images_list.json.entities | json_query(my_query)|first }}'
+  vars:
+    my_query: "[? spec.name=='{{ vm_template }}'].metadata.uuid"
