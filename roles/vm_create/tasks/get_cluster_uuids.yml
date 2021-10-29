@@ -1,0 +1,23 @@
+- name: Get clusters list
+  uri:
+    url: "{{ api_url_v3 }}/clusters/list"
+    body:
+      kind: cluster
+      sort_order: ASCENDING
+      offset: 0
+      length: 10
+      sort_attribute: ''
+    method: POST
+    validate_certs: false
+    body_format: json
+    status_code: 200
+    headers: 
+      Cookie: "{{ session_cookie }}"
+  delegate_to: localhost
+  register: clusters_list
+
+- name: Get cluster UUID from its name
+  set_fact:
+    cluster_uuid: '{{ clusters_list.json.entities | json_query(my_query)|first }}'
+  vars:
+    my_query: "[? spec.name=='{{ cluster_name }}'].metadata.uuid"
