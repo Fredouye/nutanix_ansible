@@ -1,1 +1,61 @@
+---
 
+- name: Get a list of all VMs
+  uri:
+    url: "{{ api_url_v2 }}/vms/"
+    method: GET
+    validate_certs: false
+    body_format: json
+    status_code: 200
+    force_basic_auth: true
+    url_username: "{{ prism_user }}"
+    url_password: "{{ prism_password }}"
+  register: vms_list
+  delegate_to: localhost
+
+- name: Get VM UUID from its name
+  set_fact:
+    vm_uuid: '{{ vms_list.json.entities | json_query(ma_query)|first }}'
+  vars:
+    ma_query: "[? name=='{{ inventory_hostname }}'].uuid"
+
+- name: Take a snapshot
+  uri:
+    url: '{{ api_url_v2 }}/snapshots/'
+    method: POST
+    body_format: json
+    body: '{
+      "snapshot_specs": [
+      {
+        "vm_uuid": "{{ vm_uuid }}",
+        "snapshot_name": "{{ snapshot_comment|default(default_snapshot_comment) }}"
+      }
+    ]
+    }'
+    validate_certs: false
+    force_basic_auth: true
+    url_username: "{{ prism_user }}"
+    url_password: "{{ prism_password }}"
+    return_content: true
+    status_code: 201
+  register: new_snap
+  delegate_to: localhost
+
+- name: Extract task UUID
+  set_fact:
+    task_uuid: '{{ new_snap.json.task_uuid }}'
+
+- name: Wait till task has ended
+  uri:
+    url: '{{ api_url_v2 }}/tasks/{{ task_uuid }}'
+    method: GET
+    validate_certs: false
+    force_basic_auth: true
+    url_username: "{{ prism_user }}"
+    url_password: "{{ prism_password }}"
+    return_content: true
+  register: task_status
+  delegate_to: localhost
+  retries: 10
+  delay: 5
+  until: task_status.json.progress_status == "Succeeded"
