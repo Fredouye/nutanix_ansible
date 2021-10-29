@@ -42,7 +42,7 @@ vm_template: template-rhel7-v1.0
 
 By default, each VM is provisioned with 1 sockets / multiple cores.
 
-Network settings (one NIC only) can be set manually, or get/set using IPAM :
+To set your VM's network settings (one NIC only) :
 
 ```yaml
 vm_ip: 192.168.3.111
