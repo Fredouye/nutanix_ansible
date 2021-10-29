@@ -1,0 +1,5 @@
+---
+
+api_url_v2: "https://{{ prism_url }}:9440/PrismGateway/services/rest/v2.0"
+
+default_snapshot_comment: "Taken with Ansible"
