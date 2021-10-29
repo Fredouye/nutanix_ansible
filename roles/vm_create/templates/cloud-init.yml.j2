@@ -1,0 +1,25 @@
+#cloud-config
+# vim: syntax=yaml
+
+network:
+  config: disabled
+
+write_files:
+-   content: |
+        DEVICE=eth0
+        TYPE=Ethernet
+        BOOTPROTO=static
+        IPADDR={{ vm_ip }}
+        GATEWAY={{ vm_gateway }}
+        NETMASK={{ vm_netmask }}
+        ONBOOT=yes
+    path: /etc/sysconfig/network-scripts/ifcfg-eth0
+
+hostname: {{ inventory_hostname }}
+fqdn: {{ inventory_hostname }}.{{ vm_domain }}
+manage_etc_hosts: false
+
+power_state:
+  delay: now
+  mode: reboot
+  condition: True
