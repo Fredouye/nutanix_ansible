@@ -15,9 +15,9 @@
 
 - name: Get VM UUID from its name
   set_fact:
-    vm_uuid: '{{ vms_list.json.entities | json_query(ma_query)|first }}'
+    vm_uuid: '{{ vms_list.json.entities | json_query(my_query)|first }}'
   vars:
-    ma_query: "[? name=='{{ inventory_hostname }}'].uuid"
+    my_query: "[? name=='{{ inventory_hostname }}'].uuid"
 
 - name: Take a snapshot
   uri:
