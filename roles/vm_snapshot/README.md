@@ -1,6 +1,7 @@
 ## Role description
 
 This role can be used to take a snapshot of a (Linux / Windows) VM running on top of a Nutanix hypervisor.
+It uses Nutanix REST API v2 (snapshots are currently not handled by the v3 REST API).
 
 ------
 
@@ -49,5 +50,5 @@ $ ansible-playbook playbooks/nutanix_snapshot.yml -i inventories/foo -l bar
 
 ## History
 
-| 2021/10/29 | 1.0.0 | initial release.                                          |
+| 2021/10/29 | 1.0.0 | initial release                                           |
 | ---------- | ----- | --------------------------------------------------------- |
