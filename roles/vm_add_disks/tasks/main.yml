@@ -1,0 +1,61 @@
+- name: Get a list of all VMs
+  uri:
+    url: "{{ api_url_v2 }}/vms"
+    method: GET
+    validate_certs: false
+    status_code: 200
+    force_basic_auth: true
+    url_username: "{{ prism_user }}"
+    url_password: "{{ prism_password }}"
+  register: vms_list
+  delegate_to: localhost
+
+- name: Get VM UUID from its name
+  set_fact:
+    vm_uuid: '{{ vms_list.json.entities | json_query(my_query)|first }}'
+  vars:
+    my_query: "[? name=='{{ inventory_hostname }}'].uuid"
+
+- name: Get disk config
+  uri:
+    url: "{{ api_url_v2 }}/vms/{{ vm_uuid }}?include_vm_disk_config=true"
+    method: GET
+    validate_certs: false
+    status_code: 200
+    force_basic_auth: true
+    url_username: "{{ prism_user }}"
+    url_password: "{{ prism_password }}"
+  register: vm_config
+  delegate_to: localhost
+
+- name: Get container UUID from first disk
+  set_fact:
+    container_uuid: '{{ vm_config.json.vm_disk_info[0].storage_container_uuid }}'
+
+- name: Add disks to VM
+  uri:
+    url: "{{ api_url_v2 }}/vms/{{ vm_uuid }}/disks/attach"
+    method: POST
+    validate_certs: false
+    body_format: json
+    body: '{
+      "vm_disks": [
+        {
+          "is_cdrom": false,
+          "is_thin_provisioned": "{{ (vm_disk_thin|default(default_vm_disk_thin))|lower }}",
+          "vm_disk_create":
+            {
+              "size": "{{ item*1024*1024*1024 }}",
+              "storage_container_uuid": "{{ container_uuid }}"
+            }
+        }
+      ]
+    }'
+    status_code: 201
+    force_basic_auth: true
+    url_username: "{{ prism_user }}"
+    url_password: "{{ prism_password }}"
+    return_content: true
+  loop: '{{ vm_disks_list }}'
+  when: vm_disks_list is defined
+  delegate_to: localhost
