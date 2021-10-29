@@ -2,7 +2,7 @@
 
 This role can be used to take a add disk(s) to a Linux / Windows VM running on top of a Nutanix hypervisor.
 
-It uses Nutanix REST API v2 (snapshots are currently not handled by the v3 REST API).
+It uses Nutanix REST API v2 (VMs disks are currently not handled by the v3 REST API).
 
 ------
 
