@@ -5,7 +5,6 @@
     url: "{{ api_url_v2 }}/vms/"
     method: GET
     validate_certs: false
-    body_format: json
     status_code: 200
     force_basic_auth: true
     url_username: "{{ prism_user }}"
