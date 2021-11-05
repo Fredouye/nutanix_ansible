@@ -40,5 +40,5 @@
     url_username: "{{ prism_user }}"
     url_password: "{{ prism_password }}"
     status_code: 201
-  with_items: '{{ existing_snapshots.json.entities }}'
+  loop: '{{ existing_snapshots.json.entities }}'
   delegate_to: localhost
