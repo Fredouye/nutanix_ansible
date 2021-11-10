@@ -14,11 +14,10 @@ spec:
         uuid: {{ image_uuid }}
     memory_size_mib: {{ vm_ram*1024 }}
     nic_list:
-    - ip_endpoint_list:
-      - ip: {{ vm_ip }}
-      subnet_reference:
+    - subnet_reference:
         kind: subnet
         uuid: {{ subnet_uuid }}
+      is_connected: true
     num_sockets: 1
     num_vcpus_per_socket: {{ vm_cpu }}
     power_state: 'ON'
