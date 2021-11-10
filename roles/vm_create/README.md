@@ -74,5 +74,6 @@ $ ansible-playbook playbooks/nutanix_vm_create.yml -i inventories/foo -l bar
 
 ## History
 
-| 2021/10/29 | 1.0.0 | initial release                                           |
+| 2021/11/10 | 1.0.1 | handle managed and unmanaged networks                     |
 | ---------- | ----- | --------------------------------------------------------- |
+| 2021/10/29 | 1.0.0 | initial release                                           |
