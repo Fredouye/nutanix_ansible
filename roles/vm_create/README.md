@@ -52,13 +52,15 @@ vm_subnet_name: vlan555
 vm_domain: home.lab
 ```
 
+Managed and unmanaged networks can be used.
+
 ------
 
 ## Targets compatibility
 
 This role has been tested on the following Nutanix versions :
 - [x] Community Edition 20190916.276
-- [ ] 20201105.2229
+- [x] 20201105.2229
 
 ------
 
