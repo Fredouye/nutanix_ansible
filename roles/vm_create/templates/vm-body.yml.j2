@@ -13,11 +13,19 @@ spec:
         kind: image
         uuid: {{ image_uuid }}
     memory_size_mib: {{ vm_ram*1024 }}
+{% if vm_subnet_managed %}
+    nic_list:
+    - ip_endpoint_list:
+      - ip: {{ vm_ip }}
+      subnet_reference:
+        kind: subnet
+        uuid: {{ subnet_uuid }}
+{% else %}
     nic_list:
     - subnet_reference:
         kind: subnet
         uuid: {{ subnet_uuid }}
-      is_connected: true
+{% endif %}
     num_sockets: 1
     num_vcpus_per_socket: {{ vm_cpu }}
     power_state: 'ON'
