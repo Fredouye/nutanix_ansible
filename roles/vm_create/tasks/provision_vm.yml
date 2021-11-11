@@ -17,13 +17,9 @@
   delegate_to: localhost
   register: vm_creation
 
-- name: Extract task UUID
-  set_fact:
-    task_uuid: '{{ vm_creation.json.status.execution_context.task_uuid }}'
-
 - name: Wait till task has ended
   uri:
-    url: '{{ api_url_v3 }}/tasks/{{ task_uuid }}'
+    url: '{{ api_url_v3 }}/tasks/{{ vm_creation.json.status.execution_context.task_uuid }}'
     method: GET
     validate_certs: false
     headers:
