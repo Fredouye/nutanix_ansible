@@ -40,13 +40,9 @@
   register: new_snap
   delegate_to: localhost
 
-- name: Extract task UUID
-  set_fact:
-    task_uuid: '{{ new_snap.json.task_uuid }}'
-
 - name: Wait till task has ended
   uri:
-    url: '{{ api_url_v2 }}/tasks/{{ task_uuid }}'
+    url: '{{ api_url_v2 }}/tasks/{{ new_snap.json.task_uuid }}'
     method: GET
     validate_certs: false
     force_basic_auth: true
