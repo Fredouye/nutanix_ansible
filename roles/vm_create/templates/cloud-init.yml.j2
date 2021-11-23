@@ -17,6 +17,7 @@ write_files:
 
 hostname: {{ inventory_hostname }}
 fqdn: {{ inventory_hostname }}.{{ vm_domain }}
+prefer_fqdn_over_hostname: false
 manage_etc_hosts: false
 
 power_state:
