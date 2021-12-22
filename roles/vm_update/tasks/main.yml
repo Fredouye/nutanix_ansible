@@ -40,6 +40,8 @@
     body_format: json
     body:
       name: '{{ vm_new_name | default(omit) }}'
+      memory_mb: '{{ vm_new_ram | default(omit) }}'
+      num_vcpus: '{{ vm_new_cpu | default(omit) }}'
     validate_certs: false
     headers:
       Cookie: "{{ session_cookie }}"
