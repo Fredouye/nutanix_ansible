@@ -1,0 +1,63 @@
+- name: Auths to the cluster
+  uri:
+    url: '{{ api_url_v2 }}/clusters'
+    method: GET
+    validate_certs: false
+    force_basic_auth: true
+    body_format: json
+    user: "{{ prism_user }}"
+    password: "{{ prism_password }}"
+    status_code: 200
+    return_content: true
+  register: login
+  delegate_to: localhost
+
+- name: Sets fact for session cookie
+  set_fact:
+    session_cookie: "{{ login.set_cookie }}"
+
+- name: Gets a list of all VMs
+  uri:
+    url: "{{ api_url_v2 }}/vms/"
+    method: GET
+    validate_certs: false
+    status_code: 200
+    headers:
+      Cookie: "{{ session_cookie }}"
+  register: vms_list
+  delegate_to: localhost
+
+- name: Gets VM UUID from its name
+  set_fact:
+    vm_uuid: '{{ vms_list.json.entities | json_query(my_query)|first }}'
+  vars:
+    my_query: "[? name=='{{ inventory_hostname }}'].uuid"
+
+- name: Updates VM
+  uri:
+    url: '{{ api_url_v2 }}/vms/{{ vm_uuid }}'
+    method: PUT
+    body_format: json
+    body:
+      name: '{{ vm_new_name | default(omit) }}'
+    validate_certs: false
+    headers:
+      Cookie: "{{ session_cookie }}"
+    return_content: true
+    status_code: 200
+  register: new_specs
+  delegate_to: localhost
+
+- name: Waits till task has ended
+  uri:
+    url: '{{ api_url_v2 }}/tasks/{{ new_specs.json.task_uuid }}'
+    method: GET
+    validate_certs: false
+    headers:
+      Cookie: "{{ session_cookie }}"
+    return_content: true
+  register: task_status
+  delegate_to: localhost
+  retries: 20
+  delay: 5
+  until: task_status.json.progress_status == "Succeeded"
