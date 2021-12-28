@@ -1,0 +1,81 @@
+- name: Auths to the cluster
+  uri:
+    url: "{{ api_url_v3 }}/clusters/list"
+    body:
+      kind: cluster
+      offset: 0
+      length: 10
+    method: POST
+    validate_certs: false
+    force_basic_auth: true
+    body_format: json
+    user: "{{ prism_user }}"
+    password: "{{ prism_password }}"
+    status_code: 200
+    return_content: true
+  register: login
+  delegate_to: localhost
+
+- name: Sets fact for session cookie
+  set_fact:
+    session_cookie: "{{ login.set_cookie }}"
+
+- name: Gets a list of images
+  uri:
+    url: "{{ api_url_v3 }}/images/list"
+    body:
+      kind: image
+      offset: 0
+      length: 50
+    method: POST
+    validate_certs: false
+    body_format: json
+    status_code: 200
+    headers:
+      Cookie: "{{ session_cookie }}"
+  delegate_to: localhost
+  register: images_list
+
+- name: Searches for image name and description
+  set_fact:
+    images_count: '{{ images_list.json.entities | json_query(my_query) | count }}'
+  vars:
+    my_query: "[? status.name=='{{ image_name }}' && status.description=='{{ image_description }}'].metadata.uuid"
+
+- name: Exits if image is already present
+  fail:
+    msg: '{{ image_name }} / {{ image_description }} already present'
+  when: images_count|int > 0
+
+- name: Creates image JSON payload
+  set_fact:
+    image_body: "{{ lookup('template', 'image_body.yml.j2') | from_yaml }}"
+
+- name: Creates new image
+  uri:
+    url: "{{ api_url_v3 }}/images"
+    body:
+      "{{ image_body }}"
+    method: POST
+    validate_certs: false
+    body_format: json
+    headers:
+      Cookie: "{{ session_cookie }}"
+    status_code: 202
+    return_content: true
+  delegate_to: localhost
+  register: image_creation
+
+- name: Waits till task has ended
+  uri:
+    url: '{{ api_url_v3 }}/tasks/{{ image_creation.json.status.execution_context.task_uuid }}'
+    method: GET
+    validate_certs: false
+    headers:
+      Cookie: "{{ session_cookie }}"
+    return_content: true
+  register: task_status
+  delegate_to: localhost
+  retries: 100
+  delay: 30
+  until: task_status.json.status == "SUCCEEDED"
