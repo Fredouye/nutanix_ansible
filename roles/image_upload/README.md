@@ -35,6 +35,15 @@ image_type: ISO_IMAGE
 image_url: http://centos.mirror.fr.planethoster.net/7.9.2009/isos/x86_64/CentOS-7-x86_64-NetInstall-2009.iso
 ```
 
+- "disk" images (VMDK, QCOW2, etc.)
+
+```yaml
+image_name: ubuntu-xenial
+image_description: "16.04"
+image_type: DISK_IMAGE
+image_url: http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+```
+
 ------
 
 ## Targets compatibility
