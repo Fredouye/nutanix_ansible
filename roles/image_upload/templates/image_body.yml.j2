@@ -1,0 +1,10 @@
+api_version: '3.1.0'
+metadata:
+  kind: image
+spec:
+  name: {{ image_name }}
+  description: "{{ image_description }}"
+  resources:
+    architecture: 'X86_64'
+    image_type: {{ image_type }}
+    source_uri: {{ image_url }}
