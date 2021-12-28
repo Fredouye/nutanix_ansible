@@ -50,7 +50,7 @@ image_url: http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-
 
 This role has been tested on the following Nutanix versions :
 - [x] Community Edition 20190916.276
-- [x] 20201105.2229
+- [ ] 20201105.2229
 
 ------
 
