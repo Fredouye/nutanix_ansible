@@ -57,12 +57,11 @@ This role has been tested on the following Nutanix versions :
 ## Usage
 
 ```bash
-$ ansible-playbook playbooks/nutanix_image_upload.yml -i inventories/foo -l bar
+$ ansible-playbook playbooks/nutanix_image_upload.yml
 ```
 
 ------
 
 ## History
 
-| ---------- | ----- | --------------------------------------------------------- |
 | 2021/12/28 | 1.0.0 | initial release                                           |
