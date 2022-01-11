@@ -38,8 +38,8 @@ image_url: http://centos.mirror.fr.planethoster.net/7.9.2009/isos/x86_64/CentOS-
 - "disk" images (VMDK, QCOW2, etc.)
 
 ```yaml
-image_name: ubuntu-xenial
-image_description: "16.04"
+image_name: CentOS-8.5-v1.0
+image_description: "v1.0 from 2022/01/09"
 image_type: DISK_IMAGE
 image_url: http://192.168.3.250/packer/CentOS/T-centos8.5-v1.0.qcow2
 ```
