@@ -33,33 +33,41 @@
   vars:
     my_query: "[? name=='{{ inventory_hostname }}'].uuid"
 
-- name: Updates VM
+- name: Gets current VM settings
+  uri:
+    url: '{{ api_url_v2 }}/vms/{{ vm_uuid }}?include_vm_disk_config=false&include_vm_nic_config=false'
+    method: GET
+    validate_certs: false
+    status_code: 200
+    headers:
+      Cookie: "{{ session_cookie }}"
+  register: current_vm_settings
+
+- name: Updates RAM setting
   uri:
     url: '{{ api_url_v2 }}/vms/{{ vm_uuid }}'
     method: PUT
     body_format: json
     body:
-      name: '{{ vm_new_name | default(omit) }}'
-      memory_mb: '{{ vm_new_ram | default(omit) }}'
-      num_vcpus: '{{ vm_new_cpu | default(omit) }}'
+      memory_mb: '{{ vm_ram*1024 }}'
     validate_certs: false
     headers:
       Cookie: "{{ session_cookie }}"
-    return_content: true
     status_code: 200
-  register: new_specs
   delegate_to: localhost
+  register: task_ram
+  when: current_vm_settings.json.memory_mb != vm_ram*1024
 
-- name: Waits till task has ended
+- name: Updates CPU setting
   uri:
-    url: '{{ api_url_v2 }}/tasks/{{ new_specs.json.task_uuid }}'
-    method: GET
+    url: '{{ api_url_v2 }}/vms/{{ vm_uuid }}'
+    method: PUT
+    body_format: json
+    body:
+      num_vcpus: '{{ vm_cpu }}'
     validate_certs: false
     headers:
       Cookie: "{{ session_cookie }}"
-    return_content: true
-  register: task_status
+    status_code: 200
   delegate_to: localhost
-  retries: 20
-  delay: 5
-  until: task_status.json.progress_status == "Succeeded"
+  when: current_vm_settings.json.num_vcpus != vm_cpu
