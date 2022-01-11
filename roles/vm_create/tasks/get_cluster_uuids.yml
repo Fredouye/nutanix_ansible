@@ -3,10 +3,8 @@
     url: "{{ api_url_v3 }}/clusters/list"
     body:
       kind: cluster
-      sort_order: ASCENDING
       offset: 0
       length: 10
-      sort_attribute: ''
     method: POST
     validate_certs: false
     body_format: json
