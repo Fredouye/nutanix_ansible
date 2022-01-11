@@ -58,6 +58,20 @@
   register: task_ram
   when: current_vm_settings.json.memory_mb != vm_ram*1024
 
+- name: Waits till RAM task has ended
+  uri:
+    url: '{{ api_url_v2 }}/tasks/{{ task_ram.json.task_uuid }}'
+    method: GET
+    validate_certs: false
+    headers:
+      Cookie: "{{ session_cookie }}"
+    return_content: true
+  register: task_status
+  delegate_to: localhost
+  retries: 20
+  delay: 5
+  until: task_status.json.progress_status == "Succeeded"
+
 - name: Updates CPU setting
   uri:
     url: '{{ api_url_v2 }}/vms/{{ vm_uuid }}'
@@ -70,4 +84,19 @@
       Cookie: "{{ session_cookie }}"
     status_code: 200
   delegate_to: localhost
+  register: task_cpu
   when: current_vm_settings.json.num_vcpus != vm_cpu
+
+- name: Waits till CPU task has ended
+  uri:
+    url: '{{ api_url_v2 }}/tasks/{{ task_cpu.json.task_uuid }}'
+    method: GET
+    validate_certs: false
+    headers:
+      Cookie: "{{ session_cookie }}"
+    return_content: true
+  register: task_status
+  delegate_to: localhost
+  retries: 20
+  delay: 5
+  until: task_status.json.progress_status == "Succeeded"
