@@ -41,7 +41,7 @@ image_url: http://centos.mirror.fr.planethoster.net/7.9.2009/isos/x86_64/CentOS-
 image_name: ubuntu-xenial
 image_description: "16.04"
 image_type: DISK_IMAGE
-image_url: http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+image_url: http://192.168.3.250/packer/CentOS/T-centos8.5-v1.0.qcow2
 ```
 
 ------
