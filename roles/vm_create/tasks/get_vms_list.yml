@@ -3,11 +3,9 @@
     url: "{{ api_url_v3 }}/vms/list"
     body:
       kind: vm
-      sort_order: ASCENDING
       offset: 0
       filter: 'vm_name=={{ inventory_hostname }}'
       length: 10
-      sort_attribute: ''
     method: POST
     validate_certs: false
     body_format: json
