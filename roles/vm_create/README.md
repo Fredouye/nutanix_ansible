@@ -1,6 +1,6 @@
 ## Role description
 
-This role can be used to create a Linux / Windows VM running on top of a Nutanix hypervisor.
+This role can be used to create a Linux VM running on top of a Nutanix hypervisor.
 
 It uses Nutanix REST API v3.
 
