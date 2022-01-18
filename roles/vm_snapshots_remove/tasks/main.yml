@@ -1,44 +1,57 @@
----
+- name: Auths to the cluster
+  uri:
+    url: '{{ api_url_v2 }}/clusters'
+    method: GET
+    validate_certs: false
+    force_basic_auth: true
+    body_format: json
+    user: "{{ prism_user }}"
+    password: "{{ prism_password }}"
+    status_code: 200
+    return_content: true
+  register: login
+  delegate_to: localhost
 
-- name: Get a list of all VMs
+- name: Sets fact for session cookie
+  set_fact:
+    session_cookie: "{{ login.set_cookie }}"
+
+- name: Gets a list of all VMs
   uri:
     url: "{{ api_url_v2 }}/vms/"
     method: GET
     validate_certs: false
     status_code: 200
-    force_basic_auth: true
-    url_username: "{{ prism_user }}"
-    url_password: "{{ prism_password }}"
+    headers:
+      Cookie: "{{ session_cookie }}"
   register: vms_list
   delegate_to: localhost
 
-- name: Get VM UUID from its name
+- name: Gets VM UUID from its name
   set_fact:
     vm_uuid: '{{ vms_list.json.entities | json_query(my_query)|first }}'
   vars:
     my_query: "[? name=='{{ inventory_hostname }}'].uuid"
 
-- name: Get a list of VM snapshots
+- name: Gets a list of VM snapshots
   uri:
     url: '{{ api_url_v2 }}/snapshots/?vm_uuid={{ vm_uuid }}'
     method: GET
     validate_certs: false
-    force_basic_auth: true
-    url_username: "{{ prism_user }}"
-    url_password: "{{ prism_password }}"
+    headers:
+      Cookie: "{{ session_cookie }}"
     return_content: true
     status_code: 200
   register: existing_snapshots
   delegate_to: localhost
 
-- name: Delete VM snapshots
+- name: Deletes all snapshots
   uri:
     url: '{{ api_url_v2 }}/snapshots/{{ item.uuid }}'
     method: DELETE
     validate_certs: false
-    force_basic_auth: true
-    url_username: "{{ prism_user }}"
-    url_password: "{{ prism_password }}"
+    headers:
+      Cookie: "{{ session_cookie }}"
     status_code: 201
   loop: '{{ existing_snapshots.json.entities }}'
   delegate_to: localhost
