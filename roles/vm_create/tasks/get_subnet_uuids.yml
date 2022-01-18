@@ -18,7 +18,7 @@
   set_fact:
     subnet_uuid: '{{ subnets_list.json.entities | json_query(my_query)|first }}'
   vars:
-    my_query: "[? status.name=='{{ vm_subnet_name }}'].metadata.uuid"
+    my_query: "[? status.name=='{{ vm_subnet_name }}' && spec.cluster_reference.name=='{{ cluster_name }}'].metadata.uuid"
 
 - name: Get subnet details
   uri:
