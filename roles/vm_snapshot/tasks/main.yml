@@ -1,24 +1,43 @@
----
+- name: Auths to the cluster 
+  uri:
+    url: "{{ api_url_v3 }}/clusters/list"
+    body:
+      kind: cluster
+      offset: 0
+      length: 10
+    method: POST
+    validate_certs: false
+    force_basic_auth: true
+    body_format: json
+    user: "{{ prism_user }}"
+    password: "{{ prism_password }}"
+    status_code: 200
+    return_content: true
+  register: login
+  delegate_to: localhost
 
-- name: Get a list of all VMs
+- name: Set fact for session cookie
+  set_fact:
+    session_cookie: "{{ login.set_cookie }}"
+
+- name: Gets a list of all VMs
   uri:
     url: "{{ api_url_v2 }}/vms/"
     method: GET
     validate_certs: false
     status_code: 200
-    force_basic_auth: true
-    url_username: "{{ prism_user }}"
-    url_password: "{{ prism_password }}"
+    headers: 
+      Cookie: "{{ session_cookie }}"
   register: vms_list
   delegate_to: localhost
 
-- name: Get VM UUID from its name
+- name: Gets VM UUID from its name
   set_fact:
     vm_uuid: '{{ vms_list.json.entities | json_query(my_query)|first }}'
   vars:
     my_query: "[? name=='{{ inventory_hostname }}'].uuid"
 
-- name: Take a snapshot
+- name: Takes a snapshot
   uri:
     url: '{{ api_url_v2 }}/snapshots/'
     method: POST
@@ -32,22 +51,20 @@
     ]
     }'
     validate_certs: false
-    force_basic_auth: true
-    url_username: "{{ prism_user }}"
-    url_password: "{{ prism_password }}"
+    headers: 
+      Cookie: "{{ session_cookie }}"
     return_content: true
     status_code: 201
   register: new_snap
   delegate_to: localhost
 
-- name: Wait till task has ended
+- name: Waits till task has ended
   uri:
     url: '{{ api_url_v2 }}/tasks/{{ new_snap.json.task_uuid }}'
     method: GET
     validate_certs: false
-    force_basic_auth: true
-    url_username: "{{ prism_user }}"
-    url_password: "{{ prism_password }}"
+    headers: 
+      Cookie: "{{ session_cookie }}"
     return_content: true
   register: task_status
   delegate_to: localhost
