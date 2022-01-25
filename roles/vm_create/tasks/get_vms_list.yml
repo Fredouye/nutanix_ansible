@@ -4,7 +4,7 @@
     body:
       kind: vm
       offset: 0
-      filter: 'vm_name=={{ inventory_hostname }}'
+      filter: 'vm_name=={{ inventory_hostname }};cluster=in={{ cluster_uuid }}'
       length: 10
     method: POST
     validate_certs: false
@@ -15,13 +15,7 @@
   delegate_to: localhost
   register: vms_list
 
-- name: Searches for VM in given cluster
-  set_fact:
-    vm_uuids: '{{ vms_list.json.entities | json_query(my_query) }}'
-  vars:
-    my_query: "[? status.name=='{{ inventory_hostname }}' && spec.cluster_reference.name=='{{ cluster_name }}'].metadata.uuid"
-
-- name: Exits if VM is already present
+- name: Exit if VM is already present in given cluster
   fail:
     msg: '{{ inventory_hostname }} already present in {{ cluster_name }} cluster'
-  when: vm_uuids|length|int > 0
+  when: vms_list.json.metadata.total_matches | int > 0
