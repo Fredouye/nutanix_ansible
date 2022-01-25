@@ -1,4 +1,4 @@
-- name: Get images list
+- name: Gets images list
   uri:
     url: "{{ api_url_v3 }}/images/list"
     body:
@@ -14,7 +14,7 @@
   delegate_to: localhost
   register: images_list
 
-- name: Get subnet UUID from its name
+- name: Gets image UUID from its name
   set_fact:
     image_uuid: '{{ images_list.json.entities | json_query(my_query)|first }}'
   vars:
