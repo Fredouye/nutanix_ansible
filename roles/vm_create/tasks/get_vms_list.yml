@@ -15,7 +15,13 @@
   delegate_to: localhost
   register: vms_list
 
-- name: Exit if VM is already present
+- name: Searches for VM in given cluster
+  set_fact:
+    vm_uuids: '{{ vms_list.json.entities | json_query(my_query) }}'
+  vars:
+    my_query: "[? status.name=='{{ inventory_hostname }}' && spec.cluster_reference.name=='{{ cluster_name }}'].metadata.uuid"
+
+- name: Exits if VM is already present
   fail:
-    msg: '{{ inventory_hostname }} already present'
-  when: vms_list.json.metadata.total_matches|int > 0
+    msg: '{{ inventory_hostname }} already present in {{ cluster_name }} cluster'
+  when: vm_uuids|length|int > 0
