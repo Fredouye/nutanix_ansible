@@ -1,4 +1,3 @@
-- import_tasks: get_session_cookie.yml
 - import_tasks: get_cluster_uuids.yml
 - import_tasks: get_vms_list.yml
 - import_tasks: get_subnet_uuids.yml
