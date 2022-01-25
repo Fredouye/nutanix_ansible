@@ -1,4 +1,4 @@
-- name: Get subnets list
+- name: Gets subnets list
   uri:
     url: "{{ api_url_v3 }}/subnets/list"
     body:
@@ -14,13 +14,13 @@
   delegate_to: localhost
   register: subnets_list
 
-- name: Get subnet UUID from its name
+- name: Gets subnet UUID from its name
   set_fact:
     subnet_uuid: '{{ subnets_list.json.entities | json_query(my_query)|first }}'
   vars:
     my_query: "[? status.name=='{{ vm_subnet_name }}' && spec.cluster_reference.name=='{{ cluster_name }}'].metadata.uuid"
 
-- name: Get subnet details
+- name: Gets subnet details
   uri:
     url: "{{ api_url_v3 }}/subnets/{{ subnet_uuid }}"
     body:
