@@ -1,4 +1,4 @@
-- name: Get VMs list
+- name: Gets VMs list
   uri:
     url: "{{ api_url_v3 }}/vms/list"
     body:
@@ -15,7 +15,7 @@
   delegate_to: localhost
   register: vms_list
 
-- name: Exit if VM is already present in given cluster
+- name: Exits if VM is already present in given cluster
   fail:
     msg: '{{ inventory_hostname }} already present in {{ cluster_name }} cluster'
   when: vms_list.json.metadata.total_matches | int > 0
