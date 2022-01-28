@@ -30,3 +30,19 @@
   retries: 10
   delay: 2
   until: task_status.json.status == "SUCCEEDED"
+
+- name: Ensures host is present in /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ vm_ip }}'
+    line: '{{ vm_ip }}           {{ inventory_hostname }}'
+  become: true 
+  delegate_to: localhost
+    
+- name: Waits until SSH responds
+  wait_for:
+    host: '{{ inventory_hostname }}'
+    port: 22
+    state: started
+    timeout: 300
+  delegate_to: localhost
