@@ -2,13 +2,13 @@
 
 This role can be used to remove all snapshots of a (Linux / Windows) given VM running on top of a Nutanix hypervisor.
 
-It uses Nutanix REST API v2 (snapshots are currently not handled by the v3 REST API).
+It uses Nutanix REST API v2 (snapshots are currently not handled by the v3 REST API), and therefore can only be used with a Prisme Element.
 
 ------
 
 ## Prerequisites
 
-Access to the `TCP 9440` port of your Prism Element / Prism Central. 
+Access to the `TCP 9440` port of your Prism **Element**. 
 
 ------
 
