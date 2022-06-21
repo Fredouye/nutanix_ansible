@@ -23,4 +23,4 @@ REST API explorers are available for versions 2 and 3 :
 - https://<prism_fqdn_or_ip>/api/nutanix/v2/api_explorer/index.html
 - https://<prism_fqdn_or_ip>/api/nutanix/v3/api_explorer/
 
-If you convert VM templates built on a VMWare hypervisor, make sure they include virtio drivers (and cloud-init, for OS customization).
+If you convert existing VM templates built on a VMWare hypervisor, make sure they include **virtio** drivers (and **cloud-init**, for OS customization).
